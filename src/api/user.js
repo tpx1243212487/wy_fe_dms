@@ -1,5 +1,9 @@
 import request from '@/utils/request'
-
+import http from '@/utils/http'
+//获取用户列表
+export async function getUserListApi(parm){
+  return await http.get("/api/user/list",parm)
+}
 export function login(data) {
   return request({
     url: '/vue-admin-template/user/login',
