@@ -15,7 +15,8 @@
         <el-input v-model="parms.phone"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button icon="el-icon-search">查询</el-button>
+        <el-button @click="searchBtn" icon="el-icon-search">查询</el-button>
+<el-button @click="resetBtn" style="color:#FF7670;" icon="el-icon-delete">重置</el-button>
         <el-button type="primary" @click="addUser" icon="el-icon-plus">新增</el-button>
       </el-form-item>
     </el-form>
@@ -147,7 +148,7 @@
 </template>
 
 <script>
-import { getUserListApi, addUserApi } from "@/api/user";
+import { getUserListApi, addUserApi,editUserApi,deleteUserApi } from "@/api/user";
 import SysDialog from "@/components/system/SysDialog";
 
 export default {
@@ -251,15 +252,54 @@ export default {
     },
     //编辑按钮
     editUser(row) {
+      this.dialog.title = '编辑员工';
+      //清空表单数据
+      this.$resetForm('addForm',this.addModel)
+      //设为编辑
+      this.addModel.type = '1';
+      //编辑回显
+      this.$objCoppy(row,this.addModel);
+      //显示新增或编辑弹框
+      this.dialog.visible = true;
       console.log(row);
+    },
+    //重置按钮
+    resetBtn(){
+      this.parms.phone = '';
+      this.parms.userName = '';
+      this.getUserList();
+    },
+    //搜索按钮
+    searchBtn(){
+      this.getUserList();
     },
     //表格启用、禁用事件
-    changeUsed(row) {
+    async changeUsed(row) {
       console.log(row);
+      let parm = {
+        userId: row.userId,
+        isUsed: row.isUsed,
+      };
+      let res = await editUserApi(parm);
+      if (res && res.code == 200) {
+        //刷新列表
+        this.getUserList();
+        this.$message.success(res.msg);
+      }
     },
     //表格在职、离职点击事件
-    changeStatus(row) {
+    async changeStatus(row) {
       console.log(row);
+      let parm = {
+        userId: row.userId,
+        status: row.status,
+      };
+      let res = await editUserApi(parm);
+      if (res && res.code == 200) {
+        //刷新列表
+        this.getUserList();
+        this.$message.success(res.msg);
+      }
     },
     //对话框确认事件
     onConfirm() {
@@ -269,6 +309,8 @@ export default {
           let res = null;
           if (this.addModel.type == "0") {
             res = await addUserApi(this.addModel);
+          }else{
+            res = await editUserApi(this.addModel)
           }
           //成功，刷新数据列表
           if (res && res.code == 200) {
@@ -299,13 +341,17 @@ export default {
       }
       console.log(res);
     },
-    //页容量改变的时候触发
+    //页容量改变触发
     sizeChange(val) {
-      console.log(val);
+      console.log(val)
+      this.parms.pageSize = val;
+      this.getUserList();
     },
-    //页数改变的时候触发
+    //页数改变时触发
     currentChange(val) {
-      console.log(val);
+      console.log(val)
+      this.parms.curentPage = val;
+      this.getUserList();
     },
   },
 };
