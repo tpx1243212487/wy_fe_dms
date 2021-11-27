@@ -4,6 +4,11 @@ import http from '@/utils/http'
 export async function getUserListApi(parm){
   return await http.get("/api/user/list",parm)
 }
+//新增员工
+export async function addUserApi(parm){
+  return await http.post("/api/user",parm)
+}
+
 export function login(data) {
   return request({
     url: '/vue-admin-template/user/login',

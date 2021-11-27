@@ -17,6 +17,14 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+//清空表单
+import resetForm from '@/utils/resetForm'
+Vue.prototype.$resetForm = resetForm;
+
+//信息提示框
+import myconfirm from '@/utils/myconfirm'
+Vue.prototype.$myconfirm = myconfirm;
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
